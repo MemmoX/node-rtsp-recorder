@@ -64,15 +64,14 @@ const RTSPRecorder = class {
   }
 
   getChildProcess(fileName) {
-    var args = ['-i', this.url]
+    var args = ['ffmpeg', '-rtsp_transport','tcp','-i', this.url]
     const mediaArgs = this.getArguments()
     mediaArgs.forEach((item) => {
       args.push(item)
-    })
+    });
     args.push(fileName)
-    return childProcess.spawn('ffmpeg',
-      args,
-      { detached: false, stdio: 'ignore' })
+    console.log("args", args.join(' '))
+    return childProcess.exec(args.join(' '), function(err, stdout, stderr) {})
   }
 
   stopRecording() {
@@ -108,7 +107,7 @@ const RTSPRecorder = class {
   }
 
   killStream() {
-    this.writeStream.kill()
+    this.writeStream.stdin.write('q')
   }
 
   recordStream() {
